@@ -1,0 +1,8 @@
+go 1.19
+
+use (
+	./api_gateway
+	./file_meta_data_service
+	./user_service
+	./file_upload_service
+)

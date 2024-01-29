@@ -1,0 +1,4 @@
+/user_service/*.env
+/file_upload_service/*.env
+/file_meta_data_service/*.env
+/api_gateway/*.env
