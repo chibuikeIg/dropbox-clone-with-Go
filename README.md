@@ -32,10 +32,10 @@ To run this application clone this repository down to your local machine and fol
 
 #### Required Tables
 
-- API_GATEWAY: table_name=users, primary_key=ID, range_key=email, secondary_Index=email
-- FILE_META_DATA_SERVICE: table_name=files, primary_key=id, range_key=userid,folderid, secondary_Index=userid,folderid; table_name=folders, primary_key=id, range_key=userid, secondary_Index=userid
-- FILE_UPLOAD_SERVICE: table_name=upload_parts -primary_key=uploadid -range_key=userid
-- USER_SERVICE: table_name=users, primary_key=ID, range_key=email, secondary_Index=email
+- API_GATEWAY: `table_name=users, primary_key=ID, range_key=email, secondary_Index=email`
+- FILE_META_DATA_SERVICE: `table_name=files, primary_key=id, range_key=userid,folderid, secondary_Index=userid,folderid; table_name=folders, primary_key=id, range_key=userid, secondary_Index=userid`
+- FILE_UPLOAD_SERVICE: `table_name=upload_parts -primary_key=uploadid -range_key=userid`
+- USER_SERVICE: `table_name=users, primary_key=ID, range_key=email, secondary_Index=email`
 
 ### Design Screenshot
 
