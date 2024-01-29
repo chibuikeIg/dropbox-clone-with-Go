@@ -26,8 +26,16 @@ To run this application clone this repository down to your local machine and fol
 - CD into working directory
 - In each service folder create a `.env` file following the `.env-example` and ensure you have all the values setup in it
 - In the root directory of the application where you have the `go.work` file run `go mod tidy` to download all required packages
+- Run migrations in each service folder using `go run . create -table_name='name' -primary_key='primary_key' -range_key='range_key'`. Add the `-mt=update` flag to update table.
 - Use `docker-compose up --build` to run and build all services once.
 - Test endpoints using postman or any client service of your choice
+
+#### Required Tables
+
+- API_GATEWAY: table_name=users, primary_key=ID, range_key=email, secondary_Index=email
+- FILE_META_DATA_SERVICE: table_name=files, primary_key=id, range_key=userid,folderid, secondary_Index=userid,folderid; table_name=folders, primary_key=id, range_key=userid, secondary_Index=userid
+- FILE_UPLOAD_SERVICE: table_name=upload_parts -primary_key=uploadid -range_key=userid
+- USER_SERVICE: table_name=users, primary_key=ID, range_key=email, secondary_Index=email
 
 ### Design Screenshot
 
