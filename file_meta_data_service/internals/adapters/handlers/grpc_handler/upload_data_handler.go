@@ -15,14 +15,14 @@ func NewUploadDataHandler(uds *services.UploadDataService) *UploadDataHandler {
 	return &UploadDataHandler{uds: uds}
 }
 
-func (udh UploadDataHandler) FetchUploadData(ctx context.Context, req uploaddataservice.UploadDataRequest) (*uploaddataservice.UploadDataResponse, error) {
+func (udh UploadDataHandler) FetchUploadData(ctx context.Context, req *uploaddataservice.UploadDataRequest) (*uploaddataservice.UploadDataResponse, error) {
 	return nil, nil
 }
 
-func (udh UploadDataHandler) SaveUploadData(ctx context.Context, req uploaddataservice.SaveUploadDataRequest) (*uploaddataservice.SaveUploadDataResponse, error) {
+func (udh UploadDataHandler) SaveUploadData(ctx context.Context, req *uploaddataservice.SaveUploadDataRequest) (*uploaddataservice.SaveUploadDataResponse, error) {
 	return nil, nil
 }
 
-func (udh UploadDataHandler) DeleteUploadData(ctx context.Context, req uploaddataservice.DeleteUploadDataRequest) (*uploaddataservice.DeleteUploadDataResponse, error) {
+func (udh UploadDataHandler) DeleteUploadData(ctx context.Context, req *uploaddataservice.DeleteUploadDataRequest) (*uploaddataservice.DeleteUploadDataResponse, error) {
 	return nil, nil
 }
