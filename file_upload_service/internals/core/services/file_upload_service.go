@@ -140,7 +140,7 @@ func (fus FileUploadService) CompleteMultiUpload(req fr.CompleteMultiUploadReque
 	}
 
 	// delete stored part uploads from DB
-	fus.dbRepo.Where([][]any{
+	fus.dbRepo.Table("upload_parts").Where([][]any{
 		{"userId", userId},
 		{"uploadId", req.UploadId},
 	}).Delete()
