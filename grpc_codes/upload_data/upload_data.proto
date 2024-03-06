@@ -1,0 +1,48 @@
+syntax="proto3";
+
+option go_package="./uploaddataservice";
+
+// save upload data request and response
+message SaveUploadDataRequest {
+    string userId = 1;
+    string uploadId = 2;
+    int32  partNum = 3;
+    string etag = 4;
+}
+
+message SaveUploadDataResponse {
+    string message = 1;
+    int32  statusCode = 2;
+}
+
+
+// fetch upload data request and response
+message UploadDataRequest {
+    string uploadId = 1;
+}
+
+message UploadDataResponse {
+    string data = 1;
+    int32  statusCode = 2;
+}
+
+// delete upload data request and response
+message DeleteUploadDataRequest {
+    string userId =1;
+    string uploadId = 2;
+}
+
+message DeleteUploadDataResponse {
+    string message = 1;
+    int32  statusCode = 2;
+}
+
+// PartUploadData service
+service UploadData {
+    rpc SaveUploadData(SaveUploadDataRequest) returns (SaveUploadDataResponse) {}
+    rpc FetchUploadData(UploadDataRequest) returns (UploadDataResponse) {}
+    rpc DeleteUploadData(DeleteUploadDataRequest) returns (DeleteUploadDataResponse) {}
+}
+
+
+

@@ -3,6 +3,9 @@ package main
 import (
 	"file-upload-service/internals/app"
 	consul_api "file-upload-service/internals/app/consul"
+	"os"
+
+	_ "grpc-codes/upload_data"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -16,11 +19,16 @@ func main() {
 		panic("error loading .env file. error:" + err.Error())
 	}
 
+	// consul service registration
 	consul_api.ServiceRegistration()
 
+	// REST endpoints registration
 	r := gin.Default()
-
 	LoadRoutes(r)
+
+	if len(os.Args) >= 2 {
+		os.Exit(0)
+	}
 
 	r.Run(app.Port())
 }
