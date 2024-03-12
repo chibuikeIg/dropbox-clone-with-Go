@@ -5,8 +5,6 @@ import (
 	consul_api "file-upload-service/internals/app/consul"
 	"os"
 
-	_ "grpc-codes/upload_data"
-
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )

@@ -1,25 +1,52 @@
 package services
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"file-upload-service/internals/adapters/repository"
+	consulapi "file-upload-service/internals/app/consul"
 	fr "file-upload-service/internals/app/form-request"
 	"file-upload-service/internals/core/domain"
 	"file-upload-service/internals/core/ports"
+	"fmt"
+	uploaddataservice "grpc-codes/upload_data"
 	"log"
 	"math/rand"
-	"time"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 type FileUploadService struct {
 	objectStorage   ports.ObjectStorageRepository
 	dbRepo, redisDB ports.FileUploadDBRepository
+	// grpc upload data client
+	grpcUpDClient uploaddataservice.UploadDataClient
 }
 
 func NewFileUploadService(objectStorage ports.ObjectStorageRepository, dbRepo ports.FileUploadDBRepository) *FileUploadService {
 	redis := repository.NewRedisDBRepository()
-	return &FileUploadService{objectStorage: objectStorage, dbRepo: dbRepo, redisDB: redis}
+
+	//service discovery
+	address, port, err := consulapi.ServiceDiscovery("filemetadata")
+
+	if err != nil {
+		log.Fatalf("unable to retreive service, error:%s", err.Error())
+	}
+
+	grpcServerAddr := fmt.Sprintf("%s:%v", address, port)
+	// dial grpc server and get conn
+	conn, err := grpc.Dial(grpcServerAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("did not connect to grpc upload data service: %v", err)
+	}
+	defer conn.Close()
+
+	// create new upload data client
+	grpcUpDClient := uploaddataservice.NewUploadDataClient(conn)
+
+	return &FileUploadService{objectStorage: objectStorage, dbRepo: dbRepo, redisDB: redis, grpcUpDClient: grpcUpDClient}
 }
 
 func (fus FileUploadService) InitiateMultipartUpload(req fr.FileUploadRequest, userId string) (string, string, error) {
@@ -95,13 +122,25 @@ func (fus FileUploadService) SavePartUpload(req fr.FilePartUploadRequest, userId
 	}
 
 	// store part number and etag in db
-	fus.dbRepo.Table("upload_parts").Create(domain.UploadPart{
-		UserId:    userId,
-		UploadId:  req.UploadId,
-		PartNum:   partNum,
-		Etag:      string(etag),
-		CreatedAt: time.Now(),
+	_, err = fus.grpcUpDClient.SaveUploadData(context.Background(), &uploaddataservice.SaveUploadDataRequest{
+		UserId:   userId,
+		UploadId: req.UploadId,
+		PartNum:  partNum,
+		Etag:     string(etag),
 	})
+
+	if err != nil {
+		// abort part uploads & return error
+		fus.objectStorage.AbortMultipartUpload(map[string]any{
+			"object_key": &req.ObjectKey,
+			"upload_id":  &req.UploadId,
+		})
+
+		// delete from cache db
+		fus.redisDB.Table("uploadId:" + req.UploadId).Delete()
+
+		return "", errors.New("error occured while saving upload parts, error: " + err.Error())
+	}
 
 	return etag, nil
 }
